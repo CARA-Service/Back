@@ -3,9 +3,9 @@ spring:
     name: cara
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/your_database_name
-    username: your_db_user
-    password: your_db_password
+    url: jdbc:postgresql://localhost:5432/cara_db
+    username: cara_user
+    password: qwer1234
     driver-class-name: org.postgresql.Driver
 
   jpa:

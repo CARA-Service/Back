@@ -1,4 +1,4 @@
-// SurchargePolicy Entity
+// InsuranceOption Entity
 package com.syu.cara.policy.domain;
 
 import jakarta.persistence.*;
@@ -8,16 +8,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "surcharge_policy")
+@Table(name = "insurance_option")
 @Getter @Setter @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class SurchargePolicy {
+public class InsuranceOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long surchargePolicyId;
+    private Long insuranceOptionId;
 
-    private String surchargeType;
-    private BigDecimal surchargeAmount;
+    private String insuranceType;
+    private BigDecimal insuranceFee;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

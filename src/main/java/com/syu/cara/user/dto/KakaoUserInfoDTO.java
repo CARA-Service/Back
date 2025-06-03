@@ -5,6 +5,8 @@ import lombok.Data;
 /**
  * 카카오 API로부터 받은 JSON 응답을 매핑할 DTO.
  */
+
+//id, email, nickname, profile_image만 매핑하도록 간소화함
 @Data
 public class KakaoUserInfoDTO {
     private String id;           // 카카오가 주는 고유 ID (예: "1234567890")

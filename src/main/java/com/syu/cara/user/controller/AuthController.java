@@ -3,26 +3,36 @@ package com.syu.cara.user.controller;
 import com.syu.cara.user.dto.KakaoAuthRequest;
 import com.syu.cara.user.dto.KakaoAuthResponse;
 import com.syu.cara.user.service.UserService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
 
-    /**
-     * [POST] /api/auth/kakao
-     * 클라이언트로부터 받은 accessToken을 이용해 카카오 로그인/회원가입 처리
-     */
-    @PostMapping("/kakao")
-    public ResponseEntity<KakaoAuthResponse> kakaoLogin(
-            @RequestBody KakaoAuthRequest request) {
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
 
-        KakaoAuthResponse response = userService.loginWithKakao(request);
-        return ResponseEntity.ok(response);
+    @PostMapping("/kakao")
+    public ResponseEntity<KakaoAuthResponse> kakaoLogin(@RequestBody KakaoAuthRequest request) {
+        try {
+            KakaoAuthResponse response = userService.loginWithKakao(request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            // 예: Invalid access token
+            throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "카카오 인증 실패",
+                ex
+            );
+        }
     }
 }

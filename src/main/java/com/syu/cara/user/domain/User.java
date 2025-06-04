@@ -21,7 +21,7 @@ public class User {
     private String loginId;
 
     // 일반 로그인용 비밀번호(카카오 로그인만 쓸 경우 null)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String passwordHash;
 
     // 카카오 계정 고유 ID (카카오 서버에서 받아옴)

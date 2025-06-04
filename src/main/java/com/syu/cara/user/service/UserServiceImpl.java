@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,13 +40,15 @@ public class UserServiceImpl implements UserService {
         // 2. DB: 기존 카카오 ID로 가입된 사용자가 있는지 확인
         User user = userRepository.findByKakaoId(kakaoId)
             .orElseGet(() -> {
-                // 2-1) 신규 사용자면 회원가입
+             // 신규 회원 생성할 때 passwordHash를 null이 아닌 값(랜덤 문자열 해시)으로 설정
+                String tempPassword = UUID.randomUUID().toString();
                 User newUser = User.builder()
                     .kakaoId(kakaoId)
                     .loginId("kakao_" + kakaoId)
-                    .fullName(nickname)
-                    .email(email)
-                    .profileImageUrl(profileImageUrl)
+                    .fullName(kakaoInfo.getProperties().getNickname())
+                    .email(kakaoInfo.getKakao_account().getEmail())
+                    .profileImageUrl(kakaoInfo.getProperties().getProfile_image())
+                    .passwordHash(passwordEncoder.encode(tempPassword))
                     .createdAt(LocalDateTime.now())
                     .build();
                 return userRepository.save(newUser);

@@ -6,6 +6,7 @@ import com.syu.cara.user.dto.KakaoAuthResponse;
 import com.syu.cara.user.dto.KakaoUserInfoDTO;
 import com.syu.cara.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final KakaoClient kakaoClient;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional

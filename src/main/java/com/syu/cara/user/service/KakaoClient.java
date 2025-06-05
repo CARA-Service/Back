@@ -1,50 +1,75 @@
 package com.syu.cara.user.service;
 
+import com.syu.cara.user.dto.KakaoTokenResponse;
 import com.syu.cara.user.dto.KakaoUserInfoDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@Component
 @RequiredArgsConstructor
 public class KakaoClient {
 
-    private final RestTemplate restTemplate;
+    // RestTemplate을 빈으로 등록해 두었거나, 아래처럼 직접 new RestTemplate() 해도 무방합니다.
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    // 만약 application.yml에 Kakao API 기본 URL이나 key를 넣어두었다면 @Value로 주입 가능
-    @Value("${kakao.userinfo.url:https://kapi.kakao.com/v2/user/me}")
-    private String kakaoUserInfoUrl;
+    @Value("${spring.kakao.client.client-id}")
+    private String clientId;
 
-    /**
-     * 카카오 서버로부터 사용자 정보를 가져오는 메서드.
-     * @param accessToken 카카오에서 발급받은 액세스 토큰
-     * @return KakaoUserInfo - 매핑된 사용자 정보 DTO
-     * @throws IllegalArgumentException 잘못된 응답일 경우 예외
-     */
+    @Value("${spring.kakao.client.client-secret:}")
+    private String clientSecret;
+
+    @Value("${spring.kakao.client.redirect-uri}")
+    private String redirectUri;
+
+    // 1) 인가 코드 → 액세스 토큰 요청
+    public String getAccessToken(String code) {
+        String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String,String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "authorization_code");
+        body.add("client_id", clientId);
+        body.add("redirect_uri", redirectUri);
+        body.add("code", code);
+        if (!clientSecret.isBlank()) {
+            body.add("client_secret", clientSecret);
+        }
+
+        HttpEntity<MultiValueMap<String,String>> requestEntity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<KakaoTokenResponse> response = restTemplate.exchange(
+            tokenUrl, HttpMethod.POST, requestEntity, KakaoTokenResponse.class);
+
+        if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
+            throw new RuntimeException("카카오 토큰 발급 실패");
+        }
+        // ↓ 여기서 호출하는 메서드는 getAccessToken() 이어야 합니다.
+        return response.getBody().getAccessToken();
+    }
+
+    // 2) 액세스 토큰 → 유저 정보 조회
     public KakaoUserInfoDTO getKakaoUserInfo(String accessToken) {
-        // 1) HTTP 헤더에 Bearer 토큰 세팅
+        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpEntity<String> entity = new HttpEntity<>("", headers);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-        // 2) RestTemplate을 이용해 GET 요청
         ResponseEntity<KakaoUserInfoDTO> response = restTemplate.exchange(
-                kakaoUserInfoUrl,
-                HttpMethod.GET,
-                entity,
-                KakaoUserInfoDTO.class
-        );
+            userInfoUrl, HttpMethod.GET, requestEntity, KakaoUserInfoDTO.class);
 
         if (response.getStatusCode() != HttpStatus.OK || response.getBody() == null) {
-            throw new IllegalArgumentException("카카오 사용자 정보 조회 실패");
+            throw new RuntimeException("카카오 유저 정보 조회 실패");
         }
-
         return response.getBody();
     }
 }

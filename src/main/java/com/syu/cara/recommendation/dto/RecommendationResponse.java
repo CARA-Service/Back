@@ -21,6 +21,23 @@ public class RecommendationResponse {
 
     private String agencyName;
 
+
+    public static RecommendationResponse systemMessage(String message) {
+        RecommendationResponse response = new RecommendationResponse();
+        response.setRecommendationId(0L);
+        response.setCarId(0L);
+        response.setModelName(message);
+        response.setFuelType("");
+        response.setFuelEfficiency(0.0);
+        response.setCapacity(0);
+        response.setLuggageSize("");
+        response.setTotalPrice(0);
+        response.setBasePrice(0);
+        response.setAgencyName("");
+        return response;
+    }
+
+
 //    @JsonProperty("error")
 //    private ErrorResponse error;  // 에러 필드를 추가할 수 있음
 //

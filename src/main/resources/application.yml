@@ -24,7 +24,7 @@ spring:
     client:
       client-id: 7c13edee67bab4b026ddc1256ec88eeb
       client-secret: ""
-      redirect-uri: http://localhost:8080/oauth/kakao/callback
+      redirect-uri: http://localhost:8080/v1/oauth/kakao/callback
 
   jwt:
     secret: VeryLongRandomSecretKeyForHMACSHA256Signing

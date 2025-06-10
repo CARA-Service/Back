@@ -14,32 +14,34 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtService jwtService;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
+    // JwtService, CustomUserDetailsService는 별도 @Component/@Service 어노테이션이 붙어 있어야 스캔됩니다.
     public SecurityConfig(JwtService jwtService,
-                          CustomUserDetailsService customUserDetailsService) {
+                          CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
-        this.customUserDetailsService = customUserDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
+    // HttpSecurity는 여기서만 사용, 생성자나 필드 주입 X
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // “카카오 로그인” POST 엔드포인트 (프로그램 내부 테스트용)
-                .requestMatchers("/api/v1/auth/kakao").permitAll()
-                // **콜백용 GET 엔드포인트도 반드시 permitAll 처리해줘야 합니다**
-                .requestMatchers("/v1/oauth/kakao/callback").permitAll()
-                // 그 외는 인증 필요
-                .anyRequest().authenticated()
-            );
-
-        // JWT 필터 등록 (있다면)
-        JwtAuthenticationFilter jwtFilter =
-            new JwtAuthenticationFilter(jwtService, customUserDetailsService);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+          .csrf(csrf -> csrf.disable())
+          .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+          .authorizeHttpRequests(auth -> auth
+              // 로그인, 콜백 엔드포인트는 무조건 열어두고
+              .requestMatchers("/api/v1/auth/kakao", "/oauth/kakao/callback").permitAll()
+              // 사용자 정보 조회는 JWT 인증 필요
+              .requestMatchers("/api/v1/users/me").authenticated()
+              // 나머지 요청도 인증 필요
+              .anyRequest().authenticated()
+          )
+          // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 삽입
+          .addFilterBefore(
+              new JwtAuthenticationFilter(jwtService, userDetailsService),
+              UsernamePasswordAuthenticationFilter.class
+          );
 
         return http.build();
     }

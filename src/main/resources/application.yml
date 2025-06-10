@@ -19,3 +19,13 @@ spring:
   ai:
     openai:
       api-key: ${SPRING_AI_OPENAI_API_KEY}
+
+  kakao:
+    client:
+      client-id: 7c13edee67bab4b026ddc1256ec88eeb
+      client-secret: ""
+      redirect-uri: http://localhost:8080/v1/oauth/kakao/callback
+
+  jwt:
+    secret: VeryLongRandomSecretKeyForHMACSHA256Signing
+    expirationMillis: 1209600000   # 14일(2주)를 밀리초로 환산 (14 * 24 * 60 * 60 * 1000)

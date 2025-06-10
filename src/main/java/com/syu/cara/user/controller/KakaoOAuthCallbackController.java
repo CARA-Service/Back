@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/oauth/kakao")
+@RequestMapping("/v1/oauth/kakao")
 public class KakaoOAuthCallbackController {
 
     private final KakaoClient kakaoClient;

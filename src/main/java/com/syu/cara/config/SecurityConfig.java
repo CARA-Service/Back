@@ -29,9 +29,9 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // “카카오 로그인” POST 엔드포인트 (프로그램 내부 테스트용)
-                .requestMatchers("/api/auth/kakao").permitAll()
+                .requestMatchers("/api/v1/auth/kakao").permitAll()
                 // **콜백용 GET 엔드포인트도 반드시 permitAll 처리해줘야 합니다**
-                .requestMatchers("/oauth/kakao/callback").permitAll()
+                .requestMatchers("/v1/oauth/kakao/callback").permitAll()
                 // 그 외는 인증 필요
                 .anyRequest().authenticated()
             );

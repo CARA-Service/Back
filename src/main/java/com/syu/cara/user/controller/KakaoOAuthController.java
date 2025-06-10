@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class KakaoOAuthController {
     private final KakaoClient kakaoClient;
     private final UserRepository userRepository;

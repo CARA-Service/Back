@@ -10,6 +10,6 @@ public class UserProfileResponse {
     private String email;
     private String fullName;
     private String profileImageUrl;
-    private String driver_license;
+    private String driverLicense;
     private String address;
 }

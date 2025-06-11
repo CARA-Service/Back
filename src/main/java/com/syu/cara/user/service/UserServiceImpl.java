@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         return "fake-jwt-" + user.getUserId();
     }
 
-    public void deleteMyAccount(Long userId) {
+    public void deleteAccount(Long userId) {
     if (!userRepository.existsById(userId)) {
         throw new EntityNotFoundException("User not found: " + userId);
     }

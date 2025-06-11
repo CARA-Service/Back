@@ -59,30 +59,35 @@ public class UserController {
 
         // 4) 응답 DTO 매핑
         UserProfileResponse dto = new UserProfileResponse(
-            u.getLoginId(),
-            u.getEmail(),
-            u.getFullName(),
-            u.getProfileImageUrl(),
-            u.getDriverLicenseNumber(),
-            u.getAddress()
+                u.getLoginId(),
+                u.getEmail(),
+                u.getFullName(),
+                u.getProfileImageUrl(),
+                u.getDriverLicenseNumber(),
+                u.getAddress()
         );
         return ResponseEntity.ok(dto);
     }
 
-    /**
-     * 현재 사용자의 계정을 삭제(회원탈퇴)합니다.
-     */
     @DeleteMapping
-    public ResponseEntity<Void> deleteAccount(@RequestHeader("Authorization") String authHeader) {
-        // 헤더에서 토큰만 추출
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    public ResponseEntity<Void> deleteMyAccount(@RequestHeader("Authorization") String authHeader) {
+        Long userId = extractAndValidateUserId(authHeader);
+        if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        String token = authHeader.substring(7);
 
-        // 서비스에 탈퇴 로직 위임
-        userService.deleteAccount(token);
-
+        userService.deleteAccount(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    private Long extractAndValidateUserId(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        String token = authHeader.substring(7);
+        if (!jwtService.validateToken(token)) {
+            return null;
+        }
+        return jwtService.getUserIdFromToken(token);
     }
 }

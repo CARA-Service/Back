@@ -5,6 +5,7 @@ import com.syu.cara.user.security.JwtService;
 import com.syu.cara.user.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,30 +17,32 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
-    // JwtService, CustomUserDetailsService는 별도 @Component/@Service 어노테이션이 붙어 있어야 스캔됩니다.
     public SecurityConfig(JwtService jwtService,
                           CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
-    // HttpSecurity는 여기서만 사용, 생성자나 필드 주입 X
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+          // CSRF, 세션 스태틱리스
           .csrf(csrf -> csrf.disable())
           .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+          // 엔드포인트별 접근 제어
           .authorizeHttpRequests(auth -> auth
-              // 로그인, 콜백 엔드포인트는 무조건 열어두고
+              // 카카오 로그인 / 콜백
               .requestMatchers("/api/v1/auth/kakao", "/oauth/kakao/callback").permitAll()
-              // 사용자 정보 조회는 JWT 인증 필요
-              .requestMatchers("/api/v1/users/me").authenticated()
-              // logout 엔드포인트 허용
-              .requestMatchers("/api/v1/auth/logout").permitAll()
-              // 나머지 요청도 인증 필요
+              // 로그아웃은 인증된 사용자만
+              .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
+              // 내 정보 조회
+              .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
+              // 회원 탈퇴
+              .requestMatchers(HttpMethod.DELETE, "/api/v1/users").authenticated()
+              // 그 외 요청도 인증 필요
               .anyRequest().authenticated()
           )
-          // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 삽입
+          // JWT 필터 등록 (UsernamePasswordAuthenticationFilter 앞)
           .addFilterBefore(
               new JwtAuthenticationFilter(jwtService, userDetailsService),
               UsernamePasswordAuthenticationFilter.class

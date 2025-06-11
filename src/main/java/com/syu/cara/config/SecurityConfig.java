@@ -34,6 +34,8 @@ public class SecurityConfig {
               .requestMatchers("/api/v1/auth/kakao", "/oauth/kakao/callback").permitAll()
               // 사용자 정보 조회는 JWT 인증 필요
               .requestMatchers("/api/v1/users/me").authenticated()
+              // logout 엔드포인트 허용
+              .requestMatchers("/api/v1/auth/logout").permitAll()
               // 나머지 요청도 인증 필요
               .anyRequest().authenticated()
           )

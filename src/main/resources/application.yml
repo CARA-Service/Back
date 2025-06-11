@@ -29,3 +29,14 @@ spring:
   jwt:
     secret: VeryLongRandomSecretKeyForHMACSHA256Signing
     expirationMillis: 1209600000   # 14일(2주)를 밀리초로 환산 (14 * 24 * 60 * 60 * 1000)
+
+# application.yml (공통)
+app:
+  security:
+    enabled: true    # 기본은 시큐리티 활성화
+
+---
+# src/test/resources/application.yml (테스트 전용)
+app:
+  security:
+    enabled: false   # 테스트 돌릴 땐 시큐리티 비활성화

@@ -76,7 +76,7 @@ class UserControllerTest {
     }
 
         @Test
-    void deleteMyAccount_success() throws Exception {
+    void deleteAccount_success() throws Exception {
         String jwt = "dummy.jwt.token";
         when(jwtService.validateToken(jwt)).thenReturn(true);
         when(jwtService.getUserIdFromToken(jwt)).thenReturn(42L);
@@ -90,13 +90,13 @@ class UserControllerTest {
     }
 
     @Test
-    void deleteMyAccount_unauthorized_noHeader() throws Exception {
+    void deleteAccount_unauthorized_noHeader() throws Exception {
         mockMvc.perform(delete("/api/v1/users"))
             .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void deleteMyAccount_unauthorized_badToken() throws Exception {
+    void deleteAccount_unauthorized_badToken() throws Exception {
         when(jwtService.validateToken(any())).thenReturn(false);
 
         mockMvc.perform(delete("/api/v1/users")

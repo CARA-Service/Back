@@ -3,6 +3,7 @@ package com.syu.cara.config;
 import com.syu.cara.user.security.JwtAuthenticationFilter;
 import com.syu.cara.user.security.JwtService;
 import com.syu.cara.user.service.CustomUserDetailsService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@ConditionalOnProperty(name = "app.security.enabled", havingValue = "true", matchIfMissing = true)
+
 public class SecurityConfig {
 
     private final JwtService jwtService;

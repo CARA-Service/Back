@@ -5,6 +5,7 @@ import com.syu.cara.user.dto.KakaoAuthRequest;
 import com.syu.cara.user.dto.KakaoAuthResponse;
 import com.syu.cara.user.dto.KakaoUserInfoDTO;
 import com.syu.cara.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,4 +76,11 @@ public class UserServiceImpl implements UserService {
         // 예시로 “fake-jwt-{userId}” 형태의 문자열 리턴:
         return "fake-jwt-" + user.getUserId();
     }
+
+    public void deleteMyAccount(Long userId) {
+    if (!userRepository.existsById(userId)) {
+        throw new EntityNotFoundException("User not found: " + userId);
+    }
+    userRepository.deleteById(userId);
+}
 }

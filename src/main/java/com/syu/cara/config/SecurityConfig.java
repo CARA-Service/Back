@@ -38,7 +38,7 @@ public class SecurityConfig {
               // 내 정보 조회
               .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
               // 회원 탈퇴
-              .requestMatchers(HttpMethod.DELETE, "/api/v1/users").authenticated()
+              .requestMatchers(HttpMethod.DELETE, "/api/v1/users").permitAll().anyRequest().authenticated()
               // 그 외 요청도 인증 필요
               .anyRequest().authenticated()
           )

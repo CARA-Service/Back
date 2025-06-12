@@ -19,3 +19,8 @@ spring:
   ai:
     openai:
       api-key: ${SPRING_AI_OPENAI_API_KEY}
+
+  security:
+    user:
+      name: user
+      password: 1234

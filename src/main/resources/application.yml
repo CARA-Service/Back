@@ -29,3 +29,9 @@ spring:
   jwt:
     secret: VeryLongRandomSecretKeyForHMACSHA256Signing
     expirationMillis: 1209600000   # 14일(2주)를 밀리초로 환산 (14 * 24 * 60 * 60 * 1000)
+
+  security:
+    user:
+      name: user
+      password: 1234
+

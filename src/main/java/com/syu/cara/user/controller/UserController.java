@@ -70,7 +70,9 @@ public class UserController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteMyAccount(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Void> deleteAccount(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
         Long userId = extractAndValidateUserId(authHeader);
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

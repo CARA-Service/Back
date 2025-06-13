@@ -1,6 +1,7 @@
 package com.syu.cara.user.security;
 
 import com.syu.cara.user.service.CustomUserDetailsService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,9 +37,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
+            try {
+                // 2) 토큰 검증
+                if (jwtService.validateToken(token)) {
+                    // 유효하지 않은 토큰 (만료 등)
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired JWT token");
+                }
 
-            // 2) 토큰 검증
-            if (jwtService.validateToken(token)) {
                 // 3) 토큰에서 꺼낸 userId 또는 loginId 정보를 통해 UserDetails 조회
                 Long userId = jwtService.getUserIdFromToken(token);
 
@@ -48,7 +53,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities()
                 );
                 SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (JwtException | IllegalArgumentException ex) {
+                // JWT 파싱 중 에러날 경우
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+                return;
             }
+
         }
 
         filterChain.doFilter(request, response);

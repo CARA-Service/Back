@@ -30,6 +30,7 @@ spring:
     secret: VeryLongRandomSecretKeyForHMACSHA256Signing
     expirationMillis: 1209600000   # 14일(2주)를 밀리초로 환산 (14 * 24 * 60 * 60 * 1000)
 
+<<<<<<< feature/user_kakaoAuth/_minsu
 # application.yml (공통)
 app:
   security:
@@ -40,3 +41,10 @@ app:
 app:
   security:
     enabled: false   # 테스트 돌릴 땐 시큐리티 비활성화
+=======
+  security:
+    user:
+      name: user
+      password: 1234
+
+>>>>>>> feature/user_kakaoAuth/_main

@@ -16,9 +16,12 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -34,6 +37,9 @@ class UserControllerTest {
     CustomUserDetailsService userDetailsService;
     @MockBean
     UserRepository userRepo;
+    @MockBean
+    private com.syu.cara.user.service.UserService userService;
+
 
     @Test
     void getMyProfile_success() throws Exception {
@@ -65,6 +71,35 @@ class UserControllerTest {
         when(jwtService.validateToken(any())).thenReturn(false);
 
         mockMvc.perform(get("/api/v1/users/me")
+                .header("Authorization", "Bearer bad.token"))
+            .andExpect(status().isUnauthorized());
+    }
+
+        @Test
+    void deleteAccount_success() throws Exception {
+        String jwt = "dummy.jwt.token";
+        when(jwtService.validateToken(jwt)).thenReturn(true);
+        when(jwtService.getUserIdFromToken(jwt)).thenReturn(42L);
+
+        mockMvc.perform(delete("/api/v1/users")
+                .header("Authorization", "Bearer " + jwt))
+            .andExpect(status().isNoContent());
+
+        // userService.deleteAccount(42L) 가 호출됐는지 검증
+        verify(userService).deleteAccount(42L);
+    }
+
+    @Test
+    void deleteAccount_unauthorized_noHeader() throws Exception {
+        mockMvc.perform(delete("/api/v1/users"))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void deleteAccount_unauthorized_badToken() throws Exception {
+        when(jwtService.validateToken(any())).thenReturn(false);
+
+        mockMvc.perform(delete("/api/v1/users")
                 .header("Authorization", "Bearer bad.token"))
             .andExpect(status().isUnauthorized());
     }

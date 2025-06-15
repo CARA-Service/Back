@@ -1,0 +1,5 @@
+# src/test/resources/application.yml
+
+app:
+  security:
+    enabled: false   # 테스트 돌릴 땐 시큐리티 비활성화

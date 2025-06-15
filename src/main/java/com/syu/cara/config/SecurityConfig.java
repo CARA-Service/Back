@@ -3,14 +3,18 @@ package com.syu.cara.config;
 import com.syu.cara.user.security.JwtAuthenticationFilter;
 import com.syu.cara.user.security.JwtService;
 import com.syu.cara.user.service.CustomUserDetailsService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@EnableWebSecurity
 @Configuration
+@ConditionalOnProperty(name = "app.security.enabled", havingValue = "true", matchIfMissing = true) // 베포시 havingValue false로 바꿀것
 public class SecurityConfig {
 
     private final JwtService jwtService;

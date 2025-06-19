@@ -4,6 +4,7 @@ import com.syu.cara.agency.domain.Agency;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -29,7 +30,7 @@ public class Car {
     @Column(nullable = false)
     private double fuelEfficiency;
     
-    private Integer dailyPrice;
+    private BigDecimal dailyPrice;
     private String imageUrl;
     private String additionalOptions;
 

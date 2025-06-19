@@ -43,15 +43,25 @@ public class LLMRecommendationService {
         String gptMessage = bundle.getNaturalLanguageMessage();
 
         List<Car> candidates = carRepository.findAllWithAgency(); // → fetch join으로
+        
+        //추천 조건
         List<Car> filtered = candidates.stream()
-                .filter(car -> condition.getPickupLocation() == null || car.getAgency().getAgencyName().contains(condition.getPickupLocation()))
-                .filter(car -> condition.getPassengerCount() == null || car.getCapacity() >= condition.getPassengerCount())
-                .filter(car -> condition.getFuelEfficiencyPreference() == null || car.getFuelEfficiency() >= condition.getFuelEfficiencyPreference())
-                .filter(car -> condition.getLuggageSize() == null || car.getLuggageSize().contains(condition.getLuggageSize()))
-                .filter(car -> condition.getBudget() == null || car.getDailyPrice().intValue() <= condition.getBudget())
-                .limit(5)
+                .filter(car -> {
+                    if (condition.getPickupLocation() == null) return true;
+                    String locationKeyword = condition.getPickupLocation().replace("도", "").replace("시", "").trim();
+                    return (car.getAgency().getAgencyName() != null && car.getAgency().getAgencyName().contains(locationKeyword))
+                            || (car.getAgency().getLocation() != null && car.getAgency().getLocation().contains(locationKeyword));
+                })
 
+                .limit(5)
                 .toList();
+
+        System.out.println("후보 차량 수: " + candidates.size());
+        System.out.println("필터링된 차량 수: " + filtered.size());
+        filtered.forEach(car -> System.out.println(
+                car.getModelName() + " | 연비: " + car.getFuelEfficiency() + " | 가격: " + car.getDailyPrice() + " | 인원: " + car.getCapacity()
+        ));
+
         System.out.println("🚗 Parsed Condition from GPT:");
         System.out.println(condition);
 

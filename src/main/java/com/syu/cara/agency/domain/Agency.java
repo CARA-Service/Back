@@ -20,7 +20,6 @@ public class Agency {
     private String agencyName;
     
     private String location;
-    private String businessRegistrationNumber;
     private String operatingHours;
     
     @Column(nullable = false)

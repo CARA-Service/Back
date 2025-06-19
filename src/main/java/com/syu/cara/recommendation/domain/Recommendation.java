@@ -17,19 +17,23 @@ import java.time.LocalDateTime;
 public class Recommendation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "recommendation_id")
     private Long recommendationId;
 
     @ManyToOne
-    @JoinColumn(name = "car_id", nullable = false)
+    @JoinColumn(name = "car_id")
     private Car car;
 
     @ManyToOne
-    @JoinColumn(name = "request_id", nullable = false)
+    @JoinColumn(name = "request_id")
     private RentalRequest rentalRequest;
+
+    @ManyToOne
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
 
     private BigDecimal totalPrice;
     private BigDecimal basePrice;
 
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 }

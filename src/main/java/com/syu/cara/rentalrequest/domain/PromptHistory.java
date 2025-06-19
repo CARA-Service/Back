@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class PromptHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "history_id")
     private Long historyId;
 
     @ManyToOne
@@ -21,7 +22,5 @@ public class PromptHistory {
 
     private String userInput;
     private String botResponse;
-
-    @Column(updatable = false)
     private LocalDateTime timestamp;
 }

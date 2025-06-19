@@ -4,41 +4,38 @@ import com.syu.cara.agency.domain.Agency;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "car")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class Car {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "car_id")
     private Long carId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "agency_id", nullable = false)
-    private Agency agency;  // 🔁 FK 관계
 
     private String modelName;
     private String manufacturer;
     private String category;
-
+    
+    @Column(nullable = false)
     private int capacity;
+    
     private String luggageSize;
-
     private String fuelType;
+    
+    @Column(nullable = false)
     private double fuelEfficiency;
-
-    private BigDecimal dailyPrice;
-
+    
+    private Integer dailyPrice;
     private String imageUrl;
     private String additionalOptions;
 
-    @Column(updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "agency_id")
+    private Agency agency;
+
     private LocalDateTime createdAt;
 }

@@ -1,22 +1,10 @@
 package com.syu.cara.recommendation.dto;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Data;
+import lombok.Getter;
 
 @Data
 public class RecommendationRequest {
-    private Long userId;
-
-    private String pickupLocation;
-
-    private LocalDate rentalDate;
-    private LocalDate returnDate;
-
-    private int passengerCount;
-    private String luggageSize;
-    private String purpose;
-
-    private double fuelEfficiencyPreference;
-    private int budget;
-
-    private String additionalOptions;
+    private String userInput;
 }

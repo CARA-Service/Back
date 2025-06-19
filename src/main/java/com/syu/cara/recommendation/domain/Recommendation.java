@@ -20,16 +20,12 @@ public class Recommendation {
     private Long recommendationId;
 
     @ManyToOne
-    @JoinColumn(name = "car_id")
+    @JoinColumn(name = "car_id", nullable = false)
     private Car car;
 
     @ManyToOne
-    @JoinColumn(name = "request_id")
+    @JoinColumn(name = "request_id", nullable = false)
     private RentalRequest rentalRequest;
-
-    @ManyToOne
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
 
     private BigDecimal totalPrice;
     private BigDecimal basePrice;

@@ -1,36 +1,47 @@
 package com.syu.cara.reservation.domain;
 
-import com.syu.cara.user.domain.User;
-import com.syu.cara.car.domain.CarAvailability;
+import com.syu.cara.car.domain.Car;
+import com.syu.cara.policy.domain.InsuranceOption;
+import com.syu.cara.recommendation.domain.Recommendation;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reservation")
-@Getter
-@Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter @Setter @Builder
+@NoArgsConstructor @AllArgsConstructor
 public class Reservation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reservation_id")
     private Long reservationId;
-
+    
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
+    @JoinColumn(name = "recommendation_id")
+    private Recommendation recommendation;
+    
     @ManyToOne
-    @JoinColumn(name = "availability_id", nullable = false)
-    private CarAvailability carAvailability;
-
-    private LocalDate rentalDate;
-    private LocalDate returnDate;
-
+    @JoinColumn(name = "car_id")
+    private Car car;
+    
+    @ManyToOne
+    @JoinColumn(name = "insurance_option_id")
+    private InsuranceOption insuranceOption;
+    
     @Column(nullable = false)
-    private String status;  // 예: "CONFIRMED", "CANCELLED"
+    private LocalDate rentalDate;
+    
+    @Column(nullable = false)
+    private LocalDate returnDate;
+    
+    private String reservedPeriod;
+    private Integer totalPrice;
+    
+    @Column(nullable = false)
+    private String status;
+
+    private LocalDateTime createdAt;
 }

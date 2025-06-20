@@ -28,9 +28,11 @@ public class AuthController {
             )
         );
 
+        // 인증 성공 시 CustomUserDetails로부터 User 엔티티 꺼내옴
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        // JWT 토큰 발급
         String token = jwtService.generateToken(userDetails.getUser());
-
+        // 토큰 리턴
         return ResponseEntity.ok(Map.of("token", token));
     }
 }

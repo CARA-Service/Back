@@ -2,8 +2,11 @@ package com.syu.cara.user.service;
 
 import com.syu.cara.user.domain.User;
 import com.syu.cara.user.repository.UserRepository;
+import com.syu.cara.user.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,16 +49,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     // User 엔티티를 Spring Security가 필요로 하는 UserDetails로 변환
     private UserDetails toUserDetails(User user) {
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getLoginId())
-                // JWT 기반 인증만 쓸 거라면 passwordHash를 빈 문자열("")로 두셔도 무방합니다.
-                .password(user.getPasswordHash() == null ? "" : user.getPasswordHash())
-                // 권한이 없다면 빈 배열, 필요하다면 "ROLE_USER" 등 추가
-                .authorities(/* new String[]{"ROLE_USER"} */ new String[]{})
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .disabled(false)
-                .build();
+        return new CustomUserDetails(user);
     }
 }

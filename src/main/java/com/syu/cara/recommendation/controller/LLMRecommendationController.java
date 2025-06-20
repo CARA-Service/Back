@@ -23,7 +23,7 @@ public class LLMRecommendationController {
     public ResponseEntity<List<RecommendationResponse>> recommend(
 
             @RequestBody RecommendationRequest request) {
-        List<RecommendationResponse> result = recommendationService.generateRecommendation(request);
+        List<RecommendationResponse> result = recommendationService.generateRecommendation(request.getUserInput());
         return ResponseEntity.ok(result);
     }
 }

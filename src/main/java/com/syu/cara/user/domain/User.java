@@ -14,31 +14,27 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
 
-    // 내부 식별용 ID (예: "kakao_" + kakaoId)
     @Column(nullable = false, unique = true)
     private String loginId;
 
-    // 일반 로그인용 비밀번호(카카오 로그인만 쓸 경우 null)
-    @Column(nullable = true)
     private String passwordHash;
-
-    // 카카오 계정 고유 ID (카카오 서버에서 받아옴)
-    @Column(unique = true)
-    private String kakaoId;
-
-    // 카카오에서 가져온 프로필 정보
+    
+    @Column(nullable = false)
     private String fullName;
+    
     private String email;
-    private String profileImageUrl;
-
-    // 카카오에서 가져온 프로필 정보 외 추가로 입력할 정보
     private String phoneNumber;
     private LocalDate birthDate;
+    private String driverLicense;
     private String driverLicenseNumber;
     private String address;
-
-    @Column(updatable = false)
+    
+    @Column(unique = true)
+    private String kakaoId;
+    
+    private String profileImageUrl;
     private LocalDateTime createdAt;
 } 

@@ -13,13 +13,20 @@ import java.time.LocalDateTime;
 public class Agency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "agency_id")
     private Long agencyId;
 
+    @Column(nullable = false)
     private String agencyName;
+    
     private String location;
-    private String businessRegistrationNumber;
     private String operatingHours;
+    
+    @Column(nullable = false)
+    private double latitude;
+    
+    @Column(nullable = false)
+    private double longitude;
 
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 }

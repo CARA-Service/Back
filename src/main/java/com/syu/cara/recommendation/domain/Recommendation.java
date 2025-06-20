@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class Recommendation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "recommendation_id")
     private Long recommendationId;
 
     @ManyToOne
@@ -34,6 +35,5 @@ public class Recommendation {
     private BigDecimal totalPrice;
     private BigDecimal basePrice;
 
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 }

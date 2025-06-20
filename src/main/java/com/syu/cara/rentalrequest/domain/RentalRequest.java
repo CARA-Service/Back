@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class RentalRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "request_id")
     private Long requestId;
 
     @ManyToOne
@@ -23,8 +24,19 @@ public class RentalRequest {
     private User user;
 
     private String pickupLocation;
+    
+    @Column(name = "p_latitude", nullable = false)
+    private double pLatitude;
+    
+    @Column(name = "p_longitude", nullable = false)
+    private double pLongitude;
+    
+    @Column(nullable = false)
     private LocalDate rentalDate;
+    
+    @Column(nullable = false)
     private LocalDate returnDate;
+    
     private String purpose;
     private Integer passengerCount;
     private String luggageSize;
@@ -32,6 +44,5 @@ public class RentalRequest {
     private Integer budget;
     private String additionalOptions;
 
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/v1/oauth/kakao")
+@RequestMapping("/api/v1/auth/kakao")
 public class KakaoOAuthCallbackController {
 
     private final KakaoClient kakaoClient;
@@ -34,7 +34,7 @@ public class KakaoOAuthCallbackController {
      * (1) 카카오 로그인 버튼 클릭 → 카카오 인증 화면 → 사용자 동의 후
      * 카카오가 이 콜백으로 인가 코드를 전송해 준다.
      *
-     * GET /oauth/kakao/callback?code={인가코드값}&state={원래 state}
+     * GET /api/v1/auth/kakao/callback?code={인가코드값}&state={원래 state}
      */
     @GetMapping("/callback")
     public ResponseEntity<?> kakaoCallback(@RequestParam("code") String code,

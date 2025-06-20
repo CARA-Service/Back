@@ -41,9 +41,30 @@ public class ResponseParser {
 
     public GPTRecommendationBundle parseToConditionBundle(String gptRawResponse) {
         try {
+            System.out.println("🔍 GPT Raw Response: " + gptRawResponse);
+
             JsonNode root = mapper.readTree(gptRawResponse);
+            System.out.println("🔍 Root JSON: " + root.toString());
+
+            // OpenAI API 에러 응답 체크
+            if (root.has("error")) {
+                JsonNode errorNode = root.get("error");
+                String errorMessage = errorNode.has("message") ? errorNode.get("message").asText() : "Unknown OpenAI API error";
+                System.err.println("❌ OpenAI API Error: " + errorMessage);
+                throw new RuntimeException("OpenAI API Error: " + errorMessage);
+            }
+
+            // choices 필드 체크
+            if (!root.has("choices") || root.get("choices").isEmpty()) {
+                System.err.println("❌ No choices in response: " + root.toString());
+                throw new RuntimeException("OpenAI API response has no choices");
+            }
+
             String content = root.get("choices").get(0).get("message").get("content").asText();
+            System.out.println("🔍 GPT Content: " + content);
+
             JsonNode parsed = mapper.readTree(content);
+            System.out.println("🔍 Parsed Content JSON: " + parsed.toString());
 
             RentalCondition condition = mapper.treeToValue(parsed, RentalCondition.class);
             JsonNode messageNode = parsed.get("naturalLanguageMessage");
@@ -57,6 +78,8 @@ public class ResponseParser {
             bundle.setNaturalLanguageMessage(message);
             return bundle;
         } catch (Exception e) {
+            System.err.println("❌ GPT 응답 파싱 실패: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("GPT 응답 파싱 실패 (Bundle)", e);
         }
     }

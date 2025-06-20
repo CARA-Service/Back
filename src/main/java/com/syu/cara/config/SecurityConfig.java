@@ -34,10 +34,9 @@ public class SecurityConfig {
           .authorizeHttpRequests(auth -> auth
               // 이 엔드포인트들은 Controller 레벨에서 직접 401/204 등을 처리하게 열어둡니다
               .requestMatchers(
-                  "/api/v1/auth/kakao",
+                  "/api/v1/auth/kakao",  "/api/v1/auth/login",
                   "/api/v1/auth/logout",
-                  "/oauth/kakao/callback",
-                  "/api/v1/users/me"
+                  "/api/v1/auth/kakao/callback"
               ).permitAll()
               // 나머지는 JWT 인증 필요
               .anyRequest().authenticated()

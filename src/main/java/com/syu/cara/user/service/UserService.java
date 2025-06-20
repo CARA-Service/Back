@@ -11,4 +11,6 @@ public interface UserService {
      * @return 카카오 로그인 결과 (userId, loginId, isNewUser, jwtToken)
      */
     KakaoAuthResponse loginWithKakao(KakaoAuthRequest request);
+
+    void deleteAccount(Long userId);
 }

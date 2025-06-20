@@ -76,8 +76,8 @@ public class KakaoOAuthController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    @PostMapping("/kakao/logout")
+    public ResponseEntity<Void> kakaoLogout(HttpServletResponse response) {
         // JWT를 HttpOnly 쿠키에 저장하는 경우에만 쿠키를 삭제합니다.
         Cookie cookie = new Cookie("jwtToken", null);
         cookie.setHttpOnly(true);

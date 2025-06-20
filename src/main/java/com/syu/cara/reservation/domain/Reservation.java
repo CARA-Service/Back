@@ -28,7 +28,7 @@ public class Reservation {
 
     @Column(nullable = false, name = "rental_date")
     private LocalDate rentalDate;
-
+    
     @Column(nullable = false, name = "return_date")
     private LocalDate returnDate;
 

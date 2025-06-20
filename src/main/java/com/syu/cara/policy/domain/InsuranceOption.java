@@ -14,11 +14,10 @@ import java.time.LocalDateTime;
 public class InsuranceOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "insurance_option_id")
     private Long insuranceOptionId;
 
     private String insuranceType;
     private BigDecimal insuranceFee;
-
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 }

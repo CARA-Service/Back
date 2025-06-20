@@ -28,10 +28,6 @@ public class Recommendation {
     @JoinColumn(name = "request_id")
     private RentalRequest rentalRequest;
 
-    @ManyToOne
-    @JoinColumn(name = "agency_id")
-    private Agency agency;
-
     private BigDecimal totalPrice;
     private BigDecimal basePrice;
 

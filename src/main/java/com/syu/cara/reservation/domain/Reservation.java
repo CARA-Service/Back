@@ -24,24 +24,24 @@ public class Reservation {
     private Recommendation recommendation;
     
     @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
-    
-    @ManyToOne
     @JoinColumn(name = "insurance_option_id")
     private InsuranceOption insuranceOption;
     
-    @Column(nullable = false)
+    @Column(nullable = false, name = "rental_date")
     private LocalDate rentalDate;
     
-    @Column(nullable = false)
+    @Column(nullable = false, name = "return_date")
     private LocalDate returnDate;
-    
-    private String reservedPeriod;
+
+    @Column(name = "total_price")
     private Integer totalPrice;
     
-    @Column(nullable = false)
+    @Column(nullable = false, name = "status")
     private String status;
 
+    @Column(name = "payment")
+    private String payment;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

@@ -1,6 +1,5 @@
 package com.syu.cara.reservation.domain;
 
-import com.syu.cara.car.domain.Car;
 import com.syu.cara.policy.domain.InsuranceOption;
 import com.syu.cara.recommendation.domain.Recommendation;
 import jakarta.persistence.*;
@@ -26,7 +25,7 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "insurance_option_id")
     private InsuranceOption insuranceOption;
-    
+
     @Column(nullable = false, name = "rental_date")
     private LocalDate rentalDate;
     
@@ -35,7 +34,7 @@ public class Reservation {
 
     @Column(name = "total_price")
     private Integer totalPrice;
-    
+
     @Column(nullable = false, name = "status")
     private String status;
 

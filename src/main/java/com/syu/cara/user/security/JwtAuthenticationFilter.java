@@ -39,9 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
             try {
                 // 2) 토큰 검증
-                if (jwtService.validateToken(token)) {
+                if (!jwtService.validateToken(token)) {
                     // 유효하지 않은 토큰 (만료 등)
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired JWT token");
+                    return;
                 }
 
                 // 3) 토큰에서 꺼낸 userId 또는 loginId 정보를 통해 UserDetails 조회

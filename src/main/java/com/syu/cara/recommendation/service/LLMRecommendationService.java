@@ -101,7 +101,7 @@ public class LLMRecommendationService {
             // OpenAI API 실패 시 기본 조건으로 추천
             GPTRecommendationBundle bundle = new GPTRecommendationBundle();
             bundle.setCondition(createDefaultCondition(userInput));
-            bundle.setNaturalLanguageMessage("조건에 맞는 차량을 추천해드립니다.");
+            bundle.setNaturalLanguageMessage("여행에 적합한 차량들을 준비했습니다! 🚗");
             return bundle;
         }
     }

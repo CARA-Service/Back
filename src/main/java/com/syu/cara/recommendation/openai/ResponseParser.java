@@ -71,7 +71,7 @@ public class ResponseParser {
 
             String message = (messageNode != null && !messageNode.isNull()) ?
                     messageNode.asText() :
-                    "조건에 맞는 차량입니다.";  // fallback 메시지
+                    "조건에 맞는 차량을 추천해드립니다! 🚗";  // fallback 메시지
 
             GPTRecommendationBundle bundle = new GPTRecommendationBundle();
             bundle.setCondition(condition);

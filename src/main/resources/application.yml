@@ -40,3 +40,24 @@ app:
 app:
   security:
     enabled: false   # 테스트 돌릴 땐 시큐리티 비활성화
+#
+## 개발용 프로필 (dev)
+#spring:
+#  config:
+#    activate:
+#      on-profile: dev
+#
+#app:
+#  security:
+#    enabled: false   # 개발 시 시큐리티 비활성화
+#
+#---
+## 테스트용 프로필 (test)
+#spring:
+#  config:
+#    activate:
+#      on-profile: test
+#
+#app:
+#  security:
+#    enabled: false   # 테스트 돌릴 땐 시큐리티 비활성화

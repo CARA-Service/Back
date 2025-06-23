@@ -64,7 +64,8 @@ public class UserController {
                 u.getFullName(),
                 u.getProfileImageUrl(),
                 u.getDriverLicenseNumber(),
-                u.getAddress()
+                u.getAddress(),
+                u.getPhoneNumber()
         );
         return ResponseEntity.ok(dto);
     }

@@ -11,10 +11,15 @@ import com.syu.cara.recommendation.openai.ResponseParser;
 import com.syu.cara.car.repository.CarRepository;
 import com.syu.cara.recommendation.repository.RecommendationRepository;
 import com.syu.cara.rentalrequest.repository.PromptHistoryRepository;
+import com.syu.cara.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class LLMRecommendationService {
     private final PromptHistoryRepository promptHistoryRepository;
     private final DomainClassifier domainClassifier;
     private final CarRepository carRepository;
+    private final ReservationRepository reservationRepository;
 
     public List<RecommendationResponse> generateRecommendation(String userInput) {
 
@@ -40,7 +46,30 @@ public class LLMRecommendationService {
         RentalCondition condition = bundle.getCondition();
         String gptMessage = bundle.getNaturalLanguageMessage();
 
-        List<Car> candidates = carRepository.findAllWithAgency(); // → fetch join으로
+        // 날짜 파싱
+        LocalDate rentalDate = parseDate(condition.getRentalDate());
+        LocalDate returnDate = parseDate(condition.getReturnDate());
+        
+        // 날짜가 유효하지 않은 경우 기본값 설정
+        if (rentalDate == null) {
+            rentalDate = LocalDate.now().plusDays(1);
+        }
+        if (returnDate == null) {
+            returnDate = rentalDate.plusDays(3);
+        }
+        
+        // 만약 반납일이 대여일보다 이전이면 조정
+        if (returnDate.isBefore(rentalDate)) {
+            returnDate = rentalDate.plusDays(1);
+        }
+        
+        System.out.println("🗓️ 대여 기간: " + rentalDate + " ~ " + returnDate);
+
+        List<Car> candidates = carRepository.findAllWithAgency();
+        
+        // 해당 기간에 이미 예약된 차량 ID 목록 조회 (status가 "결제완료"인 예약만 고려)
+        Set<Long> reservedCarIds = reservationRepository.findReservedCarIds(rentalDate, returnDate);
+        System.out.println("🚫 이미 예약된 차량 수: " + reservedCarIds.size());
         
         //추천 조건
         System.out.println("🔍 필터링 시작 - 찾는 지역: " + condition.getPickupLocation());
@@ -50,6 +79,13 @@ public class LLMRecommendationService {
 
         List<Car> filtered = candidates.stream()
                 .filter(car -> {
+                    // 1. 이미 예약된 차량 필터링 (가장 먼저 체크)
+                    if (reservedCarIds.contains(car.getCarId())) {
+                        System.out.println("🚫 예약 불가: " + car.getModelName() + " (이미 예약됨)");
+                        return false;
+                    }
+                    
+                    // 2. 지역 필터링
                     if (condition.getPickupLocation() == null) return true;
 
                     // 디버깅 로그
@@ -168,6 +204,21 @@ public class LLMRecommendationService {
         }
 
         return "제주"; // 기본값
+    }
+
+    // 날짜 문자열을 LocalDate로 파싱하는 메서드
+    private LocalDate parseDate(String dateStr) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return null;
+        }
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            return LocalDate.parse(dateStr, formatter);
+        } catch (DateTimeParseException e) {
+            System.err.println("날짜 형식이 잘못되었습니다: " + dateStr);
+            return null;
+        }
     }
 
 }

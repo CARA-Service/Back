@@ -25,7 +25,11 @@ public class PromptHistory {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(columnDefinition = "TEXT")
     private String userInput;
+
+    @Column(columnDefinition = "TEXT")
     private String botResponse;
+
     private LocalDateTime timestamp;
 }

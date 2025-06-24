@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -69,9 +71,14 @@ public class LLMRecommendationService {
         
         //추천 조건
         System.out.println("🔍 필터링 시작 - 찾는 지역: " + condition.getPickupLocation());
-        String locationKeyword = condition.getPickupLocation() != null ?
-            condition.getPickupLocation().replace("도", "").replace("시", "").trim() : "";
-        System.out.println("🔍 지역 키워드: '" + locationKeyword + "'");
+
+        // 영어 지역명을 한국어로 변환
+        String originalLocation = condition.getPickupLocation();
+        String koreanLocation = convertEnglishToKorean(originalLocation);
+
+        String locationKeyword = koreanLocation != null ?
+            koreanLocation.replace("도", "").replace("시", "").trim() : "";
+        System.out.println("🔍 원본 지역: '" + originalLocation + "' → 한국어: '" + koreanLocation + "' → 키워드: '" + locationKeyword + "'");
 
         List<Car> filtered = candidates.stream()
                 .filter(car -> {
@@ -80,16 +87,25 @@ public class LLMRecommendationService {
                     // 디버깅 로그
                     String agencyName = car.getAgency().getAgencyName();
                     String agencyLocation = car.getAgency().getLocation();
-                    boolean matches = (agencyName != null && agencyName.contains(locationKeyword))
-                            || (agencyLocation != null && agencyLocation.contains(locationKeyword));
+
+                    // 여러 키워드로 검색 (원본, 한국어, 영어)
+                    boolean matches = false;
+                    String[] searchKeywords = {locationKeyword, originalLocation, koreanLocation};
+
+                    for (String keyword : searchKeywords) {
+                        if (keyword != null && !keyword.isEmpty()) {
+                            if ((agencyName != null && agencyName.contains(keyword))
+                                    || (agencyLocation != null && agencyLocation.contains(keyword))) {
+                                matches = true;
+                                System.out.println("🎯 매칭된 차량: " + car.getModelName() + " - " + agencyName + " (키워드: '" + keyword + "')");
+                                break;
+                            }
+                        }
+                    }
 
                     // 매칭 실패한 경우도 로그 출력 (처음 5개만)
                     if (!matches && candidates.indexOf(car) < 5) {
-                        System.out.println("❌ 매칭 실패: " + car.getModelName() + " - " + agencyName + " (키워드: '" + locationKeyword + "')");
-                    }
-
-                    if (matches) {
-                        System.out.println("🎯 매칭된 차량: " + car.getModelName() + " - " + agencyName);
+                        System.out.println("❌ 매칭 실패: " + car.getModelName() + " - " + agencyName + " (검색 키워드들: " + String.join(", ", searchKeywords) + ")");
                     }
 
                     return matches;
@@ -196,6 +212,85 @@ public class LLMRecommendationService {
             }
         }
 
+        // 전국 시/군/구 매핑 (Map 사용)
+        Map<String, String> cityMapping = new HashMap<>();
+
+        // 부산광역시
+        cityMapping.put("해운대", "부산"); cityMapping.put("서면", "부산");
+        cityMapping.put("남포동", "부산"); cityMapping.put("광안리", "부산");
+
+        // 대구광역시
+        cityMapping.put("동성로", "대구"); cityMapping.put("수성구", "대구");
+
+        // 인천광역시
+        cityMapping.put("송도", "인천"); cityMapping.put("부평", "인천"); cityMapping.put("계양", "인천");
+
+        // 광주광역시
+        cityMapping.put("상무지구", "광주"); cityMapping.put("충장로", "광주");
+
+        // 대전광역시
+        cityMapping.put("둔산", "대전"); cityMapping.put("유성", "대전");
+
+        // 울산광역시
+        cityMapping.put("남구", "울산"); cityMapping.put("중구", "울산");
+
+        // 경기도
+        String[] gyeonggiCities = {"수원", "성남", "고양", "용인", "부천", "안산", "안양", "남양주",
+                                  "화성", "평택", "의정부", "시흥", "파주", "광명", "김포", "군포",
+                                  "광주", "이천", "양주", "오산", "구리", "안성", "포천", "의왕",
+                                  "하남", "여주", "양평", "동두천", "과천", "가평", "연천","일산"};
+        for (String city : gyeonggiCities) cityMapping.put(city, "경기");
+
+        // 강원도
+        String[] gangwonCities = {"춘천", "원주", "강릉", "동해", "태백", "속초", "삼척", "홍천",
+                                 "횡성", "영월", "평창", "정선", "철원", "화천", "양구", "인제",
+                                 "고성", "양양"};
+        for (String city : gangwonCities) cityMapping.put(city, "강원");
+
+        // 충청북도
+        String[] chungbukCities = {"청주", "충주", "제천", "보은", "옥천", "영동", "증평", "진천",
+                                  "괴산", "음성", "단양"};
+        for (String city : chungbukCities) cityMapping.put(city, "충북");
+
+        // 충청남도
+        String[] chungnamCities = {"천안", "공주", "보령", "아산", "서산", "논산", "계룡", "당진",
+                                  "금산", "부여", "서천", "청양", "홍성", "예산", "태안"};
+        for (String city : chungnamCities) cityMapping.put(city, "충남");
+
+        // 전라북도
+        String[] jeonbukCities = {"전주", "군산", "익산", "정읍", "남원", "김제", "완주", "진안",
+                                 "무주", "장수", "임실", "순창", "고창", "부안"};
+        for (String city : jeonbukCities) cityMapping.put(city, "전북");
+
+        // 전라남도
+        String[] jeonnamCities = {"목포", "여수", "순천", "나주", "광양", "담양", "곡성", "구례",
+                                 "고흥", "보성", "화순", "장흥", "강진", "해남", "영암", "무안",
+                                 "함평", "영광", "장성", "완도", "진도", "신안"};
+        for (String city : jeonnamCities) cityMapping.put(city, "전남");
+
+        // 경상북도
+        String[] gyeongbukCities = {"포항", "경주", "김천", "안동", "구미", "영주", "영천", "상주",
+                                   "문경", "경산", "군위", "의성", "청송", "영양", "영덕", "청도",
+                                   "고령", "성주", "칠곡", "예천", "봉화", "울진", "울릉"};
+        for (String city : gyeongbukCities) cityMapping.put(city, "경북");
+
+        // 경상남도
+        String[] gyeongnamCities = {"창원", "진주", "통영", "사천", "김해", "밀양", "거제", "양산",
+                                   "의령", "함안", "창녕", "고성", "남해", "하동", "산청", "함양",
+                                   "거창", "합천"};
+        for (String city : gyeongnamCities) cityMapping.put(city, "경남");
+
+        // 제주특별자치도
+        cityMapping.put("제주시", "제주"); cityMapping.put("서귀포", "제주");
+
+        // 도시 매핑 체크
+        for (Map.Entry<String, String> entry : cityMapping.entrySet()) {
+            if (userInput.contains(entry.getKey())) {
+                System.out.println("🗺️ " + entry.getKey() + " → " + entry.getValue() + " 매핑");
+                return entry.getValue();
+            }
+        }
+
         // 광역시/도 단위 체크
         String[] locations = {"서울", "부산", "대구", "인천", "광주", "대전", "울산", "세종",
                              "경기", "강원", "충북", "충남", "전북", "전남", "경북", "경남", "제주"};
@@ -212,6 +307,33 @@ public class LLMRecommendationService {
         }
 
         return "제주"; // 기본값
+    }
+
+    // 영어 지역명을 한국어로 변환
+    private String convertEnglishToKorean(String englishLocation) {
+        if (englishLocation == null) return null;
+
+        Map<String, String> englishToKorean = new HashMap<>();
+        englishToKorean.put("Seoul", "서울");
+        englishToKorean.put("Busan", "부산");
+        englishToKorean.put("Daegu", "대구");
+        englishToKorean.put("Incheon", "인천");
+        englishToKorean.put("Gwangju", "광주");
+        englishToKorean.put("Daejeon", "대전");
+        englishToKorean.put("Ulsan", "울산");
+        englishToKorean.put("Sejong", "세종");
+        englishToKorean.put("Gyeonggi", "경기");
+        englishToKorean.put("Gangwon", "강원");
+        englishToKorean.put("Chungbuk", "충북");
+        englishToKorean.put("Chungnam", "충남");
+        englishToKorean.put("Jeonbuk", "전북");
+        englishToKorean.put("Jeonnam", "전남");
+        englishToKorean.put("Gyeongbuk", "경북");
+        englishToKorean.put("Gyeongnam", "경남");
+        englishToKorean.put("Jeju", "제주");
+
+        // 영어 지역명이 있으면 한국어로 변환, 없으면 원본 반환
+        return englishToKorean.getOrDefault(englishLocation, englishLocation);
     }
 
     // RentalRequest 생성 메서드 (사용자 정보 포함)

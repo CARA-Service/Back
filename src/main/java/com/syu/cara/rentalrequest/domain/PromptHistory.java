@@ -1,6 +1,7 @@
 // PromptHistory Entity
 package com.syu.cara.rentalrequest.domain;
 
+import com.syu.cara.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,10 @@ public class PromptHistory {
     @ManyToOne
     @JoinColumn(name = "request_id")
     private RentalRequest rentalRequest;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String userInput;
     private String botResponse;

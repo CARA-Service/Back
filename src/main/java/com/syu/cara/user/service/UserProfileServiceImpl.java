@@ -30,7 +30,8 @@ public class UserProfileServiceImpl implements UserProfileService {
             user.getFullName(),
             user.getProfileImageUrl(),
             user.getDriverLicenseNumber(),
-            user.getAddress()
+            user.getAddress(),
+            user.getPhoneNumber()
         );
     }
 }

@@ -12,4 +12,5 @@ public class UserProfileResponse {
     private String profileImageUrl;
     private String driverLicense;
     private String address;
+    private String phoneNumber;
 }

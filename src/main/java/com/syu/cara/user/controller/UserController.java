@@ -36,12 +36,13 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResponseEntity<UserProfileResponse> getMyProfile(
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        // 1) 헤더 검증
+        // JWT 토큰 검증 필수
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         String token = authHeader.substring(7);
 
         // 2) 토큰 검증
@@ -64,7 +65,8 @@ public class UserController {
                 u.getFullName(),
                 u.getProfileImageUrl(),
                 u.getDriverLicenseNumber(),
-                u.getAddress()
+                u.getAddress(),
+                u.getPhoneNumber()
         );
         return ResponseEntity.ok(dto);
     }

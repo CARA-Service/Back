@@ -21,10 +21,6 @@ public class PromptHistory {
     @JoinColumn(name = "request_id")
     private RentalRequest rentalRequest;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     private String userInput;
     private String botResponse;
     private LocalDateTime timestamp;

@@ -64,10 +64,9 @@ public class LLMRecommendationService {
         RentalRequest rentalRequest = createRentalRequest(condition, userInput, user);
         RentalRequest savedRentalRequest = rentalRequestRepository.save(rentalRequest);
 
-        // 2. PromptHistory 저장 (사용자 입력과 GPT 응답, 사용자 정보 포함)
+        // 2. PromptHistory 저장 (사용자 입력과 GPT 응답)
         PromptHistory promptHistory = PromptHistory.builder()
                 .rentalRequest(savedRentalRequest)
-                .user(user)  // 사용자 정보 추가
                 .userInput(userInput)
                 .botResponse(gptMessage)
                 .timestamp(LocalDateTime.now())
